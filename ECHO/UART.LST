@@ -1,0 +1,128 @@
+C51 COMPILER V9.02   UART                                                                  09/27/2019 09:57:42 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN UART.OBJ
+COMPILER INVOKED BY: F:\Keil\C51\BIN\C51.EXE UART.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          
+   2          #include"bsp.h"
+   3          unsigned char buf5[]={0x1A};
+   4          /*----------------------------
+   5          UART 中断服务程序
+   6          -----------------------------*/
+   7          void UATR_INIT()
+   8          {
+   9   1                P0M0 = 0x00;
+  10   1          P0M1 = 0x00;
+  11   1          P1M0 = 0x00;
+  12   1          P1M1 = 0x00;
+  13   1          P2M0 = 0x00;
+  14   1          P2M1 = 0x00;
+  15   1          P3M0 = 0x00;
+  16   1          P3M1 = 0x00;
+  17   1          P4M0 = 0x00;
+  18   1          P4M1 = 0x00;
+  19   1          P5M0 = 0x00;
+  20   1          P5M1 = 0x00;
+  21   1          P6M0 = 0x00;
+  22   1          P6M1 = 0x00;
+  23   1          P7M0 = 0x00;
+  24   1          P7M1 = 0x00;
+  25   1      
+  26   1          ACC = P_SW1;
+  27   1          ACC &= ~(S1_S0 | S1_S1);    //S1_S0=0 S1_S1=0
+  28   1          P_SW1 = ACC;                //(P3.0/RxD, P3.1/TxD)
+  29   1          
+  30   1      
+  31   1      #if (PARITYBIT == NONE_PARITY)
+                  SCON = 0x50;                //8位可变波特率
+              #elif (PARITYBIT == ODD_PARITY) || (PARITYBIT == EVEN_PARITY) || (PARITYBIT == MARK_PARITY)
+  34   1          SCON = 0xda;                //9位可变波特率,校验位初始为1
+  35   1      #elif (PARITYBIT == SPACE_PARITY)
+                  SCON = 0xd2;                //9位可变波特率,校验位初始为0
+              #endif
+  38   1      
+  39   1          AUXR = 0x40;                //定时器1为1T模式
+  40   1          TMOD = 0x00;                //定时器1为模式0(16位自动重载)
+  41   1          TL1 = (65536 - (FOSC/4/BAUD));   //设置波特率重装值
+  42   1          TH1 = (65536 - (FOSC/4/BAUD))>>8;
+  43   1          TR1 = 1;                    //定时器1开始启动
+  44   1          ES = 1;                     //使能串口中断
+  45   1          EA = 1;
+  46   1              
+  47   1          
+  48   1      
+  49   1      }
+  50          void Uart() interrupt 4 using 1
+  51          {
+  52   1          if (RI)
+  53   1          {
+  54   2              RI = 0;                 //清除RI位
+  55   2              P0 = SBUF;              //P0显示串口数据
+C51 COMPILER V9.02   UART                                                                  09/27/2019 09:57:42 PAGE 2   
+
+  56   2              P22 = RB8;              //P2.2显示校验位
+  57   2          }
+  58   1          if (TI)
+  59   1          {
+  60   2              TI = 0;                 //清除TI位
+  61   2              busy = 0;               //清忙标志
+  62   2          }
+  63   1               
+  64   1      }
+  65          
+  66          /*----------------------------
+  67          发送串口数据
+  68          ----------------------------*/
+  69          void SendData(BYTE dat)
+  70          {
+  71   1          while (busy);               //等待前面的数据发送完成
+  72   1          ACC = dat;                  //获取校验位P (PSW.0)
+  73   1          if (P)                      //根据P来设置校验位
+  74   1          {
+  75   2      #if (PARITYBIT == ODD_PARITY)
+                      TB8 = 0;                //设置校验位为0
+              #elif (PARITYBIT == EVEN_PARITY)
+  78   2              TB8 = 1;                //设置校验位为1
+  79   2      #endif
+  80   2          }
+  81   1          else
+  82   1          {
+  83   2      #if (PARITYBIT == ODD_PARITY)
+                      TB8 = 1;                //设置校验位为1
+              #elif (PARITYBIT == EVEN_PARITY)
+  86   2              TB8 = 0;                //设置校验位为0
+  87   2      #endif
+  88   2          }
+  89   1          busy = 1;
+  90   1          SBUF = ACC;                 //写数据到UART数据寄存器
+  91   1      }
+  92          
+  93          /*----------------------------
+  94          发送字符串
+  95          ----------------------------*/
+  96          void SendString(char *s)
+  97          {
+  98   1          while (*s)                  //检测字符串结束标志
+  99   1          {
+ 100   2              SendData(*s++);         //发送当前字符
+ 101   2          }
+ 102   1      }
+ 103          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    154    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      1       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
