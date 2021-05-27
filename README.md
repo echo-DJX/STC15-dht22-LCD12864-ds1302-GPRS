@@ -10,10 +10,6 @@ UART.c  通过串口驱动sim900a与onenet进行tcp通信 将温湿度数据上�
 
 展示：
 
-![contents](https://github.com/echo-DJX/STC15-dht22-LCD12864-ds1302-sim900a/tree/master/img/img\2 (1).jpg)
-![contents](https://github.com/echo-DJX/STC15-dht22-LCD12864-ds1302-sim900a/tree/master/img/img\2 (2).jpg)
-
-
-
-
+![2 (2)](https://github.com/echo-DJX/STC15-dht22-LCD12864-ds1302-sim900a/tree/master/img/img\2 (1).jpg)
+![2 (2)](https://github.com/echo-DJX/STC15-dht22-LCD12864-ds1302-sim900a/tree/master/img/img\2 (2).jpg)
 
