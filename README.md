@@ -7,3 +7,10 @@ dht22.c dht22的驱动
 display.c 显示屏LCD12864函数
 ds1302.c  ds1302的驱动函数
 UART.c  通过串口驱动sim900a与onenet进行tcp通信 将温湿度数据上传。
+
+展示：
+
+![微信图片_20210527200948](C:\Users\echo-djx\Desktop\微信图片_20210527200948.jpg)
+
+![微信图片_20210527201006](C:\Users\echo-djx\Desktop\微信图片_20210527201006.jpg)
+
